@@ -1,0 +1,14 @@
+# Exported from 3D Builder
+
+newmtl Material__27
+Kd 1.000000 1.000000 1.000000
+
+newmtl White
+Kd 1.000000 1.000000 1.000000
+map_Kd whmarble.jpg
+
+newmtl 01___Default
+Kd 0.454900 0.454900 0.454900
+
+newmtl czxcvxvbcvbnv
+Kd 0.454900 0.454900 0.454900

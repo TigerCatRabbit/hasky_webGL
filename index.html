@@ -1,0 +1,2661 @@
+﻿<!--2018齐鲁软件大赛 山东大学 HaskyBoy 智能家居设计-->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebGL智能家居设计</title>
+	
+    <style>
+	#canvas-dom{ 
+		background-color: #ffffff;
+		width:95%; 
+		height:95%;
+		float:right;
+		
+	}
+	
+	#item{
+		border-radius:5px;
+		background-color: #222831;
+		border: 0;
+		position:absolute;
+		top:7%;
+		left:0.5%;
+		width:200px;
+		height:90%;
+	}
+	#FurItem{
+		display:none;
+		border-radius:5px;
+		background-color: #222831;
+		border: 0;
+		position:absolute;
+		top:7%;
+		left:220px;
+		width:390px;
+		height:90%;
+	}
+	#OptionList{
+		border-radius:5px;
+		background-color: #222831;
+		border: 0;
+		position:absolute;
+		top:7%;
+		right:5px;
+		width:150px;
+		height:45%;
+	}
+	.DragHandle{
+		border-radius:4px;
+		background-color: #DCDCDC;
+		width:90%;
+		height:30px;
+		position:relative;
+		top:20px;
+		left:5%;
+		-webkit-transition: all ease 0.2s;
+		-moz-transition: all ease 0.2s;
+		-o-transition-delay: all ease 0.2s;
+		transition: all ease 0.2s
+	}
+	.DragHandle:hover{
+		background-color: #FFFFFF;
+		-webkit-transition: all ease 0.2s;
+		-moz-transition: all ease 0.2s;
+		-o-transition-delay: all ease 0.2s;
+		transition: all ease 0.2s
+	}
+	#ButtonList1{
+		background-color: #222831;
+		width:80%;
+		position:relative;
+		top:50px;
+		left:10%;
+	}
+	#ButtonList2{
+		display:none;
+		background-color: #222831;
+		width:80%;
+		position:relative;
+		top:50px;
+		left:10%;
+	}
+	#ButtonList3{
+		overflow: scroll;
+		overflow-x: hidden;
+		background-color: #222831;
+		width:90%;
+		height:88%;
+		position:relative;
+		top:50px;
+		left:6%;
+	}
+	#ButtonList4{
+		background-color: #222831;
+		width:80%;
+		position:relative;
+		top:50px;
+		left:10%;
+	}
+	.MButton{
+		border:0;
+		top:5px;
+		background-color:#222831;
+		color:#FFFFFF;
+		font-size:15px;
+		width:100%;
+		height:40px;
+		text-align:center;
+		-webkit-transition: all ease 0.2s;
+		-moz-transition: all ease 0.2s;
+		-o-transition-delay: all ease 0.2s;
+		transition: all ease 0.2s
+	}
+	.MButton:hover{
+		border:0;
+		background-color:#393e46 !important;
+		-webkit-transition: all ease 0.2s;
+		-moz-transition: all ease 0.2s;
+		-o-transition-delay: all ease 0.2s;
+		transition: all ease 0.2s
+	}
+	.MButton2{
+		border:0;
+		top:5px;
+		background-color:#222831;
+		color:#FFFFFF;
+		font-size:15px;
+		width:100%;
+		height:40px;
+		text-align:center;
+		-webkit-transition: all ease 0.2s;
+		-moz-transition: all ease 0.2s;
+		-o-transition-delay: all ease 0.2s;
+		transition: all ease 0.2s
+	}
+	#toptoolbar{
+		z-index:99;
+		background-color:#222831;
+		width:100%;
+		height:50px;
+		top:0;
+		left:0;
+	}
+	#toplist{
+		background-color:#222831;
+		width:80%;
+		left:10%;
+	}
+	.topbutton{
+		border:0;
+		background-color:#222831;
+		width:100px;
+		height:100%;
+		color:#FFFFFF;
+		font-size:15px;
+		-webkit-transition: all ease 0.2s;
+		-moz-transition: all ease 0.2s;
+		-o-transition-delay: all ease 0.2s;
+		transition: all ease 0.2s
+	}
+	.topbutton:hover{
+		background-color:#393e46 !important;
+		-webkit-transition: all ease 0.2s;
+		-moz-transition: all ease 0.2s;
+		-o-transition-delay: all ease 0.2s;
+		transition: all ease 0.2s
+	}
+	.ImageButton{
+		width:100px;
+		height:100px;
+		border: 3px solid #393e46;
+		-webkit-transition: all ease 0.2s;
+		-moz-transition: all ease 0.2s;
+		-o-transition-delay: all ease 0.2s;
+		transition: all ease 0.2s
+	}
+	.ImageButton:hover{
+		border: 3px solid #7971ea;
+		-webkit-transition: all ease 0.2s;
+		-moz-transition: all ease 0.2s;
+		-o-transition-delay: all ease 0.2s;
+		transition: all ease 0.2s
+	}
+	</style>
+    <script src="js/three.js"></script>
+	<script src="js/jquery.min.js"></script>
+	<script src="js/OrbitControls.js"></script>
+	<script src="js/dat.gui.min.js"></script>
+	<script src="js/jquery-ui.js"></script>
+	<script src="js/TransformControls.js"></script>
+	
+	<script src="js/OBJLoader.js"></script>
+	<script src="js/MTLLoader.js"></script>
+	<script src="js/ThreeBSP.js"></script>
+	<script src="js/PointerLockControls.js"></script>
+	<script src="js/ChangeWallpaper.js"></script>
+	
+
+</head>
+<body>
+	<!--
+	<button onclick = 'AddWall()'>添加墙</button>
+	<button onclick = 'AddWallpaper()'>添加墙纸</button>
+	<button onclick = 'ChangeWallpaper()'>改变墙纸</button>
+	<button onclick = 'AddWindow()'>添加窗</button>
+	<button onclick = 'AddDoor()'>添加门</button>
+	<button onclick = 'ChangeDoorDirection()'>改变门的方向</button>
+	<button onclick = 'AddRoom()'>创建房间</button>
+	<button onclick = 'FirstPerson()'>第一人称</button>
+	<button onclick = 'ChangeTo2D()'>2D模式</button>
+	<button onclick = 'ChangeTo3D()'>3D模式</button>
+	<button onclick = 'ScalePlus()'>放大</button>
+	<button onclick = 'ScaleMinus()'>缩小</button>
+	<button onclick = "ControlDispose()" style="color:red">解除控制</button>
+	<button onclick = 'OpenGrdiHelper()'>开关网格</button>
+	<button onclick = 'OpenBoxHelper()'>开关墙边</button>
+	<button onclick = 'Openlinegroup()'>开关标识线</button>
+	<button onclick = 'OpenDeleteMode()'>移除家具</button>
+	-->
+	<!---顶部工具栏-->
+	
+	<tips></tips>
+	<li id="toptoolbar">
+		<a id="toplist">
+			<button class="topbutton" onclick = 'HideItem()'>▼</button>
+			<button class="topbutton" onclick = 'FirstPerson()'>第一人称</button>
+			<button class="topbutton" onclick = 'ClearAll()'>清空画布</button>
+			<button class="topbutton" onclick = 'ClearFur()'>清空家具</button>
+			<button class="topbutton" onclick = 'DefaultCamera()'>重置视角</button>
+			<button class="topbutton" id="Btn2D" onclick = 'Mode2D()'>2D</button>
+			<button class="topbutton" id="Btn3D" onclick = 'Mode3D()'>3D</button>
+			<button class="topbutton" onclick = 'OpenGrdiHelper(this)'>隐藏网格</button>
+			<button class="topbutton" onclick = 'OpenBoxHelper(this)'>隐藏墙边</button>
+		</a>
+	</li>
+	
+	<!---顶部工具栏-->
+	<canvas id="canvas-dom">您的浏览器不支持canvas!</canvas>
+	
+	<div id="item">
+		<div class="DragHandle" id="DragHandle1"></div>
+			<!--2D模式显示的菜单-->
+			<div id="ButtonList1">
+				<button class="MButton" onclick = 'AddRoom(this)'>房间</button><br>
+				<button class="MButton" onclick = 'AddWall(this)'>墙</button><br>
+				<button class="MButton" onclick = 'AddFloor(this)'>地板</button>
+				<button class="MButton" onclick = 'AddWindow(this)'>窗</button><br>
+				<button class="MButton" onclick = 'AddDoor(this)'>门</button><br>
+			</div>
+			<!--3D模式显示的菜单-->
+			<div id="ButtonList2">
+				<button class="MButton" onclick = 'OpenCeiling(this)'>开关天花板</button>
+				<button class="MButton" onclick = 'RemoveFur(this)'>家具删除</button>
+				<button class="MButton" onclick = "AddChair(this)">桌/椅</button>
+				<button class="MButton" onclick = "AddBed(this)">床/柜/沙发</button>
+				<button class="MButton" onclick = "AddLight(this)">灯/装饰</button>
+				<button class="MButton" onclick = 'AddWallpaper(this)'>墙纸</button>
+			</div>
+	</div>
+	
+	<!--家具选择列表-->
+	<div id="FurItem">
+		<div class="DragHandle" id="DragHandle2"></div>
+		<div id="ButtonList3"></div>
+	</div >
+	
+	<!--修改参数的菜单-->
+	<div id="OptionList">
+		<div class="DragHandle" id="DragHandle3"></div>
+		<div id="ButtonList4">
+			<center><a class="MButton2" style="text-align:center">墙纸/地板调整</a></center><br>
+			<button class="MButton" onclick = 'SizeX(true)'>增大横向密度</button>
+			<button class="MButton" onclick = 'SizeX(false)'>减小横向密度</button>
+			<button class="MButton" onclick = 'SizeY(true)'>增大纵向密度</button>
+			<button class="MButton" onclick = 'SizeY(false)'>减小纵向密度</button>
+			<br><br>
+			<center><a class="MButton2" style="text-align:center">家具缩放</a></center><br>
+			<button class="MButton" onclick = 'ScalePlus()'>放大</button>
+			<button class="MButton" onclick = 'ScaleMinus()'>缩小</button>
+		</div>
+	</div>
+    
+	<script src="js/ItemList.js"></script>
+	<script src="js/Listener_AddDoor.js"></script>
+	<script src="js/Listener_AddFloor.js"></script>
+	<script>
+		
+		//显示隐藏FurItem
+		function showFurItem(show){
+			if(show){//显示FurItem
+				if($("#FurItem").is(":hidden")){
+					$('#FurItem').slideDown();
+				}
+			}else{//隐藏FurItem
+				if(!$("#FurItem").is(":hidden")){
+					$('#FurItem').slideUp();
+				}
+			}
+		}
+		//桌椅
+		function AddChair(obj){
+			LoadList("chair");
+			var $temp = $(obj);
+			if(LastBtn){//之前的按钮已经有了
+				LastBtn.css("background-color",'#222831');//还原上一按钮
+				if(LastBtn.is($temp)){//同一按钮
+					ChangeTo3D();
+					showFurItem(false);
+					LastBtn = null;
+					return;
+				}else{//按钮变更
+					LastBtn  = $temp;
+					LastBtn.css("background-color",'#7971ea');
+				}
+			}else{//是第一个按钮
+				LastBtn  = $temp;
+				LastBtn.css("background-color",'#7971ea');
+			}
+			showFurItem(true);
+		}
+		//床柜
+		function AddBed(obj){
+			LoadList("bed");
+			var $temp = $(obj);
+			if(LastBtn){//之前的按钮已经有了
+				LastBtn.css("background-color",'#222831');//还原上一按钮
+				if(LastBtn.is($temp)){//同一按钮
+					ChangeTo3D();
+					showFurItem(false);
+					LastBtn = null;
+					return;
+				}else{//按钮变更
+					LastBtn  = $temp;
+					LastBtn.css("background-color",'#7971ea');
+				}
+			}else{//是第一个按钮
+				LastBtn  = $temp;
+				LastBtn.css("background-color",'#7971ea');
+			}
+			showFurItem(true);
+		}
+		//灯具
+		function AddLight(obj){
+			LoadList("light");
+			var $temp = $(obj);
+			if(LastBtn){//之前的按钮已经有了
+				LastBtn.css("background-color",'#222831');//还原上一按钮
+				if(LastBtn.is($temp)){//同一按钮
+					ChangeTo3D();
+					showFurItem(false);
+					LastBtn = null;
+					return;
+				}else{//按钮变更
+					LastBtn  = $temp;
+					LastBtn.css("background-color",'#7971ea');
+				}
+			}else{//是第一个按钮
+				LastBtn  = $temp;
+				LastBtn.css("background-color",'#7971ea');
+			}
+			showFurItem(true);
+		}
+		var NowListType;
+		var NowWallpaper = 'wallpaper02';
+		
+		//加载菜单
+		//参数type  [Wallpaper,Window,Door,Floor,chair,bed,light,desk]
+		function LoadList(type){
+			NowListType = type;
+			$("#ButtonList3").empty();
+			switch(type){
+				case "Wallpaper":
+					for(var i=0;i<WallPaperList.length;i++){
+						$("#ButtonList3").append("<img class =\"ImageButton\" src=\"image/wallpaper/"+WallPaperList[i].name+".jpg\" tag=\""+WallPaperList[i].name+"\" ButtonIndex="+i+" onclick=\"showself(this)\"/>");
+					}
+					break;
+				case "Window":
+					for(var i=0;i<WindowsList.length;i++){
+						$("#ButtonList3").append("<img class =\"ImageButton\" src=\"image/ButtonImage/window/"+WindowsList[i].name+".jpg\" ButtonIndex="+i+" onclick=\"showself(this)\"/>");
+					}
+					break;
+				case "Door":
+					for(var i=0;i<DoorsList.length;i++){
+						$("#ButtonList3").append("<img class =\"ImageButton\" src=\"image/ButtonImage/door/"+DoorsList[i].name+".jpg\" ButtonIndex="+i+" onclick=\"showself(this)\"/>");
+					}
+					break;
+				
+				case "Floor":
+					for(var i=0;i<FloorList.length;i++){
+						$("#ButtonList3").append("<img class =\"ImageButton\" src=\"image/floor/"+FloorList[i].name+".jpg\" tag=\""+FloorList[i].name+"\" ButtonIndex="+i+" onclick=\"showself(this)\"/>");
+					}
+					break;
+				//不同类型的家具在default中进行
+				default:
+					for(var i=0;i<FursList.length;i++){
+						if(FursList[i].type==type){
+							$("#ButtonList3").append("<img class =\"ImageButton\" src=\"image/ButtonImage/fur/"+FursList[i].name+".jpg\" ButtonIndex="+i+" onclick=\"showself(this)\"/>");
+						}
+					}
+					break;
+			}
+		}
+		
+		function showself(obj){
+			var $temp = $(obj);//DOM对象转为jquery对象
+			switch(NowListType){
+				//改变当前墙纸
+				case "Wallpaper":
+					NowWallpaper = $temp.attr("tag");
+					break;
+				case "Door":
+					NowDoorIndex = $temp.attr("ButtonIndex");
+					break;
+				case "Window":
+					NowWindowIndex = $temp.attr("ButtonIndex");
+					break;
+				case "Floor":
+					NowFloor = $temp.attr("tag");
+					break;
+				//家具类型的就直接加载进场景中
+				default:
+					LoadItem("fur",$temp.attr("ButtonIndex"),new THREE.Vector3(0,0,0));
+					break;
+			}
+		}
+		var creating = false;//已经有点p1，等待p2
+		//添加墙
+		function AddWall(obj){
+			var $temp = $(obj);
+			if(LastBtn){//还原上一个按钮
+				LastBtn.css("background-color",'#222831');
+				if(!LastBtn.is($temp)){//不是同一个按钮
+					LastBtn  = $temp;
+					LastBtn.css("background-color",'#7971ea');
+				}else{//是同一个按钮
+					console.log("get");
+					ChangeTo2D();
+					showFurItem(false);
+					LastBtn = null;
+					return;
+				}
+			}else{//这是第一个按钮
+				LastBtn  = $temp;
+				LastBtn.css("background-color",'#7971ea');
+			}
+			
+			creating = false;
+			removeAllListener();
+			mainCanvas.addEventListener( 'mousemove', onMouseMove_AddWall, false );
+			mainCanvas.addEventListener( 'mousedown', onMouseDown_AddWall, false );
+			showFurItem(false);
+		}
+		//添加房间
+		function AddRoom(obj){
+			var $temp = $(obj);
+			if(LastBtn){//还原上一个按钮
+				LastBtn.css("background-color",'#222831');
+				if(!LastBtn.is($temp)){//不是同一个按钮
+					LastBtn  = $temp;
+					LastBtn.css("background-color",'#7971ea');
+				}else{//是同一个按钮
+					ChangeTo2D();
+					showFurItem(false);
+					LastBtn = null;
+					return;
+				}
+			}else{//这是第一个按钮
+				LastBtn  = $temp;
+				LastBtn.css("background-color",'#7971ea');
+			}
+			LoadList("Floor");
+			creating = false;
+			removeAllListener();
+			mainCanvas.addEventListener( 'mousemove', onMouseMove_AddRoom, false );
+			mainCanvas.addEventListener( 'mousedown', onMouseDown_AddRoom, false );
+			showFurItem(true);
+		}
+		//滑动切换
+		function Toggle(tar){
+			if($(tar).is(":hidden")){
+				$(tar).slideDown();
+			}else{
+				$(tar).slideUp();
+			}
+		}
+		var LastBtn;
+		function AddFloor(obj){
+			var $temp = $(obj);
+			if(LastBtn){//还原上一个按钮
+				LastBtn.css("background-color",'#222831');
+				if(!LastBtn.is($temp)){//不是同一个按钮
+					LastBtn  = $temp;
+					LastBtn.css("background-color",'#7971ea');
+				}else{//是同一个按钮
+					ChangeTo2D();
+					showFurItem(false);
+					LastBtn = null;
+					return;
+				}
+			}else{//这是第一个按钮
+				LastBtn  = $temp;
+				LastBtn.css("background-color",'#7971ea');
+			}
+			LoadList("Floor");
+			creating = false;
+			removeAllListener();
+			mainCanvas.addEventListener( 'mousemove', onMouseMove_AddFloor, false );
+			mainCanvas.addEventListener( 'mousedown', onMouseDown_AddFloor, false );
+			showFurItem(true);
+		}
+		var WallHeight = 2;//墙的高度
+		function HideItem(){
+			if($("#item").is(":hidden")){
+				$("#item").slideDown();
+			}else{
+				$("#item").slideUp();
+				$("#FurItem").slideUp();
+			}
+			
+		}
+		function switchList(Mode3D){
+			//Mode3D显示2隐藏1
+			if(Mode3D){
+				if(!$("#ButtonList1").is(":hidden")){
+					$("#ButtonList1").slideUp();
+				}
+				if($("#ButtonList2").is(":hidden")){
+					$("#ButtonList2").slideDown();
+				}
+			}else{
+				if(!$("#ButtonList2").is(":hidden")){
+					$("#ButtonList2").slideUp();
+				}
+				if($("#ButtonList1").is(":hidden")){
+					$("#ButtonList1").slideDown();
+				}
+			}
+		}
+		function DefaultCamera(){
+			camera2D.position.set(0,5,0);
+			//camera2D.lookAt(new THREE.Vector3(0,0,0));
+			camera3D.position.set(5,0,0);
+			camera3D.lookAt(new THREE.Vector3(0,0,0));
+			cameraFPS = new THREE.PerspectiveCamera(75, mainCanvas.offsetWidth/mainCanvas.offsetHeight, 0.1, 100);
+			/*camera = camera2D;
+			orbitControls2D.enabled = true;
+			orbitControls3D.enabled = false;
+			Mode3D();*/
+		}
+		function Mode2D(){
+			switchList(false);
+			showFurItem(false);
+			$("#Btn2D").css("background-color",'#7971ea');
+			$("#Btn3D").css("background-color",'#222831');
+			ChangeCamera(2);
+			ChangeTo2D();
+			Openlinegroup(true);
+		}
+		function Mode3D(){
+			switchList(true);
+			showFurItem(false);
+			$("#Btn3D").css("background-color",'#7971ea');
+			$("#Btn2D").css("background-color",'#222831');
+			ChangeCamera(3);
+			ChangeTo3D();
+			Openlinegroup(false);
+		}
+		function RemoveFur(obj){
+			var $temp = $(obj);
+			//关闭删除
+			if(DeleteMode){
+				$temp.css("background-color",'#222831');
+				DeleteMode = false;
+			}else{//打开删除
+				ChangeCamera(3);
+				ChangeTo3D();
+				DeleteMode = true;
+				$temp.css("background-color",'#7971ea');
+			}
+		}
+		//清空画布
+		function ClearAll(){
+			while(DoorGroup.children[0]){
+				DoorGroup.remove(DoorGroup.children[0]);
+			}
+			while(FloorGroup.children[0]){
+				FloorGroup.remove(FloorGroup.children[0]);
+			}
+			while(WindowGroup.children[0]){
+				WindowGroup.remove(WindowGroup.children[0]);
+			}
+			while(linegroup.children[0]){
+				linegroup.remove(linegroup.children[0]);
+			}
+			while(Walls.children[0]){
+				Walls.remove(Walls.children[0]);
+			}
+			Walls2 = [];
+			while(fur.children[0]){
+				fur.remove(fur.children[0]);
+			}
+		}
+		function ClearFur(){
+			while(fur.children[0]){
+				fur.remove(fur.children[0]);
+			}
+		}
+		$("#item").draggable({handle:"#DragHandle1"});
+		$("#FurItem").draggable({handle:"#DragHandle2"});
+		$("#OptionList").draggable({handle:"#DragHandle3"});
+		//第一人称游览视角
+		function FirstPerson(){
+			ControlDispose();
+			disposeLine(true);
+			Openlinegroup(false);
+			removeAllListener();
+			initControls();
+			initPointerLock();
+		}
+		function OpenCeiling(obj){
+			var $temp = $(obj);	
+			if(ceiling.visible){
+				ceiling.visible = false;
+				$temp.css("background-color",'#222831');
+			}else{
+				ceiling.visible = true;
+				$temp.css("background-color",'#7971ea');
+			}
+		}
+		//是否显示网格grid
+		function OpenGrdiHelper(obj){
+			var $temp = $(obj);	
+			if(grid.visible){
+				grid.visible = false;
+				$temp.css("background-color",'#7971ea');
+			}else{
+				grid.visible = true;
+				$temp.css("background-color",'#222831');
+			}
+		}
+		//是否显示墙的边框
+		var BoxVisible = true;
+		function OpenBoxHelper(obj){
+			var $temp = $(obj);	
+			if(BoxVisible){
+				$temp.css("background-color",'#7971ea');
+				BoxVisible = false;
+			}else{
+				$temp.css("background-color",'#222831');
+				BoxVisible = true;
+			}
+			for(var i=0;i<Walls.children.length;i++){
+				if(Walls.children[i].children[0].visible){
+					Walls.children[i].children[0].visible = false;
+					BoxVisible = false;
+				}else{
+					Walls.children[i].children[0].visible = true;
+					BoxVisible = true;
+				}
+			}	
+		}
+		function Openlinegroup(open){
+			if(open){
+				linegroup.visible = true;
+			}else{
+				linegroup.visible = false;
+			}
+		}
+		function OpenDeleteMode(){
+			if(DeleteMode){
+				DeleteMode = false;
+			}else{
+				DeleteMode = true;
+			}
+		}
+		function removeAllListener(){
+			ControlDispose();
+			disposeLine(true);
+			mainCanvas.removeEventListener( 'mouseup', onMouseUp, false );
+			mainCanvas.removeEventListener( 'mousemove', onMouseMove, false );
+			mainCanvas.removeEventListener( 'mousedown', onMouseDown, false );
+			mainCanvas.removeEventListener( 'mousemove', onMouseMove_AddWall, false );
+			mainCanvas.removeEventListener( 'mousedown', onMouseDown_AddWall, false );
+			mainCanvas.removeEventListener( 'mousemove', onMouseMove_AddWindow, false );
+			mainCanvas.removeEventListener( 'mousedown', onMouseDown_AddWindow, false );
+			mainCanvas.removeEventListener( 'mousemove', onMouseMove_AddDoor, false );
+			mainCanvas.removeEventListener( 'mousedown', onMouseDown_AddDoor, false );
+			mainCanvas.removeEventListener( 'mousemove', onMouseMove_AddRoom, false );
+			mainCanvas.removeEventListener( 'mousedown', onMouseDown_AddRoom, false );
+			mainCanvas.removeEventListener( 'mousemove', onMouseMove_AddFloor, false );
+			mainCanvas.removeEventListener( 'mousedown', onMouseDown_AddFloor, false );
+			mainCanvas.removeEventListener( 'mousedown', onMouseDown2D, false );
+			mainCanvas.removeEventListener( 'mousedown', onMouseDown_ChangeWallpaper, false );
+			instructions.removeEventListener( 'click', RequestPointLockerControl, false );
+		}
+		function ScalePlus(){
+			var p = 1.1;
+			NowItem.scale.x = NowItem.scale.x * p;
+			NowItem.scale.y = NowItem.scale.y * p;
+			NowItem.scale.z = NowItem.scale.z * p;
+		}
+		function ScaleMinus(){
+			var p = 0.9;
+			NowItem.scale.x = NowItem.scale.x * p;
+			NowItem.scale.y = NowItem.scale.y * p;
+			NowItem.scale.z = NowItem.scale.z * p;
+		}
+
+		var box,camera;
+		var RoomHeight = 3;
+		//将一个家具添加到场景中
+		
+		
+		
+		var mainCanvas = document.getElementById("canvas-dom");//画布
+		
+		//存放所有家具
+		var fur = new THREE.Group();
+		var NowItem = null;//当前选中的物体 可以对该物体进行移动、旋转、删除等操作
+		
+        var scene = new THREE.Scene();
+		scene.background = new THREE.Color( 0xf0f0f0 );
+        
+		var val = 30;
+		var camera2D = new THREE.OrthographicCamera(mainCanvas.width/-val,mainCanvas.width/val,mainCanvas.height/val,mainCanvas.height/-val,1,10);
+		camera2D.position.set(0,5,0);
+		camera2D.lookAt(new THREE.Vector3(0,0,0));
+		//初始摄像机为2D
+		//camera = camera2D;
+		
+		var camera3D = new THREE.PerspectiveCamera(45, mainCanvas.offsetWidth/mainCanvas.offsetHeight, 0.1, 1000);
+		camera3D.position.set(5,0,0);
+		camera3D.lookAt(new THREE.Vector3(0,0,0));
+        camera = camera3D;
+		scene.add(camera);
+		
+		//渲染器
+		
+		var renderer = new THREE.WebGLRenderer({
+                canvas: mainCanvas,
+                antialias:true, //设置抗锯齿
+                alpha:true, //背景透明
+        });
+		
+
+		//var renderer = new THREE.WebGLRenderer({ canvas: mainCanvas,antialias:true,logarithmicDepthBuffer: true });
+		//console.log(renderer);
+		
+        renderer.setSize(mainCanvas.offsetWidth,mainCanvas.offsetHeight);//渲染器的大小
+		document.body.appendChild( renderer.domElement );
+		
+		
+		var plane = new THREE.PlaneGeometry(25,25);
+		var material3 = new THREE.MeshLambertMaterial({color: 0xebebeb});
+		var ground = new THREE.Mesh(plane,material3);
+		ground.rotation.set(-0.5 * Math.PI, 0, 0);
+		ground.position.set(0,-1,0);//地面的y值为-1
+		scene.add(ground);
+
+		
+		//网格宽度，等分数，中心线颜色，普通线颜色
+		var grid = new THREE.GridHelper(25,50,0xCCCCCC,0xe1e1e1);
+		grid.position.copy(ground.position);
+		grid.position.y = grid.position.y + 0.001;
+		scene.add(grid);
+		
+		var ceiling = new THREE.GridHelper(25,50,0x00CED1,0x00CED1);
+		ceiling.position.copy(ground.position);
+		ceiling.position.y = ceiling.position.y + 0.001 + WallHeight;
+		scene.add(ceiling);
+		ceiling.visible = false;
+		
+		//光源
+		var light = new THREE.DirectionalLight( 0xFFFFFF,1 );
+		light.position.set(20,20,20);
+		scene.add(light);
+		
+		//环境光
+		var ambientLight = new THREE.AmbientLight( 0xCCCCCC,1 );
+		scene.add(ambientLight);
+		
+		
+		//镜头控制
+		//AddAdd
+		var orbitControls2D = new THREE.OrbitControls(camera2D, renderer.domElement);
+		orbitControls2D.enabled = false;//开始时禁用2D相机控制
+		//2D相机禁止旋转
+		orbitControls2D.enableRotate = false;
+		orbitControls2D.target = new THREE.Vector3(0, 0, 0);//焦点
+		orbitControls2D.autoRotate = false;//自动旋转关闭
+		orbitControls2D.zoomSpeed = 2;//滚轮速度
+		
+		var orbitControls3D = new THREE.OrbitControls(camera3D, renderer.domElement);
+		orbitControls3D.target = new THREE.Vector3(0, 0, 0);//焦点
+		orbitControls3D.autoRotate = false;//自动旋转关闭
+		orbitControls3D.zoomSpeed = 2;//滚轮速度
+		
+		//orbitControls3D.enabled = false;//开始时禁用2D相机控制
+		
+		//阴影
+		/*
+		renderer.shadowMap.enabled = true;
+		light.castShadow = true;
+		cube.castShadow = true;
+        ground.castShadow = true;
+		*/
+		
+	/*
+		function LoadFur(filename ) {
+			"use strict";
+			var manager = new THREE.LoadingManager();
+			// 载入过程中发生错误
+			manager.onError = function (xhr) {
+				alert('manager.onError：模型载入错误', true);
+			};
+			// 实时反馈载入过程
+			manager.onProgress = function (xhr) {
+				if (xhr.lengthComputable) {
+					var percentComplete = Math.round(xhr.loaded / xhr.total * 100, 2);
+				alert('模型载入中，已完成' + percentComplete + '%');
+				}
+			};
+			// 当所有的模型载入完成时
+			manager.onLoad = function (xhr) {
+			};
+			// 新建OBJ模型装载器
+			var mtlloader = new THREE.MTLLoader(manager);
+			// 智能修正路径格式
+			mtlloader.setPath("Model/");
+			mtlloader.load(filename + '.mtl', function (materials) {
+	
+				// 纹理贴图预加载
+				materials.preload();
+				// MTL装载器和OBJ装载器都使用同一个装载管理器manager
+				var objLoader = new THREE.OBJLoader(manager);
+				objLoader.setMaterials(materials);
+				objLoader.setPath("Model/");
+				objLoader.load(filename + '.obj', function (loadedMesh) {
+					var temp = loadedMesh;
+					var scale = 0.009;
+					temp.scale.set(scale, scale, scale);
+					temp.position.copy(new THREE.Vector3(0, 0, 0));
+					fur.add(temp);				
+				});
+			});
+		}
+		*/
+		//LoadFur("chair01");
+		
+		
+		//类型type 在List中的序号numb ， 目标坐标点point
+		function LoadFur(type,numb,point) {
+			var filename;
+			var item;//根据type和numb确定对象
+			switch(type){
+				case "window":
+					item = WindowsList[numb];
+					break;
+				case "door":
+					item = DoorsList[numb];
+					break;
+				case "fur":
+					item = FursList[numb];
+					break;
+				default:
+					return;
+			}
+			//模型名
+			filename = item.name;
+		
+			"use strict";
+			var manager = new THREE.LoadingManager();
+			// 载入过程中发生错误
+			manager.onError = function (xhr) {
+				alert('manager.onError：模型载入错误', true);
+			};
+			// 实时反馈载入过程
+			manager.onProgress = function (xhr) {
+				if (xhr.lengthComputable) {
+					var percentComplete = Math.round(xhr.loaded / xhr.total * 100, 2);
+				alert('模型载入中，已完成' + percentComplete + '%');
+				}
+			};
+			// 当所有的模型载入完成时
+			manager.onLoad = function (xhr) {
+			};
+			// 新建OBJ模型装载器
+			var mtlloader = new THREE.MTLLoader(manager);
+			// 智能修正路径格式
+			mtlloader.setPath("Model/");
+			mtlloader.load(filename + '.mtl', function (materials) {
+				// 纹理贴图预加载
+				materials.preload();
+				// MTL装载器和OBJ装载器都使用同一个装载管理器manager
+				var objLoader = new THREE.OBJLoader(manager);
+				objLoader.setMaterials(materials);
+				objLoader.setPath("Model/");
+				
+				objLoader.load(filename + '.obj', function (loadedMesh) {
+					var temp = loadedMesh;
+					var scaleX = item.scale.x;
+					var scaleY = item.scale.y;
+					var scaleZ = item.scale.z;
+					temp.scale.set(scaleX, scaleY, scaleZ);
+					
+					temp.position.copy(point);
+
+					
+					var HX = item.position.x;
+					var HY = item.position.y;
+					var HZ = item.position.z;
+					temp.position.x = temp.position.x + HX;//修正窗的位置
+					temp.position.y = temp.position.y + HY;
+					temp.position.z = temp.position.z + HZ;
+
+					fur.add(temp);
+				});
+			});
+		}
+		
+		var DoorGroup = new THREE.Group();
+		var FloorGroup = new THREE.Group();
+		var WindowGroup = new THREE.Group();
+		scene.add(DoorGroup);
+		scene.add(FloorGroup);
+		scene.add(WindowGroup);
+		
+		//LoadItem("fur",0,new THREE.Vector3(0,0,0),false);
+		
+		
+		//类型type 在List中的序号numb ， 目标坐标点point , 是否水平h
+		function LoadItem(type,numb,point,h) {
+			var filename;
+			var item;//根据type和numb确定对象
+			var itemGroup;
+			switch(type){
+				case "window":
+					item = WindowsList[numb];
+					itemGroup = WindowGroup;
+					break;
+				case "door":
+					item = DoorsList[numb];
+					itemGroup = DoorGroup;
+					break;
+				case "fur":
+					item = FursList[numb];
+					itemGroup = fur;
+					break;
+				default:
+					return;
+			}
+			//模型名
+			filename = item.name;
+		
+			"use strict";
+			var manager = new THREE.LoadingManager();
+			// 载入过程中发生错误
+			manager.onError = function (xhr) {
+				alert('manager.onError：模型载入错误', true);
+			};
+			// 实时反馈载入过程
+			manager.onProgress = function (xhr) {
+				if (xhr.lengthComputable) {
+					var percentComplete = Math.round(xhr.loaded / xhr.total * 100, 2);
+				alert('模型载入中，已完成' + percentComplete + '%');
+				}
+			};
+			// 当所有的模型载入完成时
+			manager.onLoad = function (xhr) {
+			};
+			// 新建OBJ模型装载器
+			var mtlloader = new THREE.MTLLoader(manager);
+			// 智能修正路径格式
+			mtlloader.setPath("Model/"+item.path);
+			mtlloader.load(filename + '.mtl', function (materials) {
+				// 纹理贴图预加载
+				materials.preload();
+				// MTL装载器和OBJ装载器都使用同一个装载管理器manager
+				var objLoader = new THREE.OBJLoader(manager);
+				objLoader.setMaterials(materials);
+				objLoader.setPath("Model/"+item.path);
+				
+				objLoader.load(filename + '.obj', function (loadedMesh) {
+					var temp = loadedMesh;
+					
+					//尝试将导入物体的中心位置重新设置
+					//for(var i =0;i<temp.children.length;i++){
+						//temp.children[i].geometry.computeVertexNormals();
+						//temp.children[i].geometry.center();
+					//	temp.children[i].geometry.computeBoundingBox();
+					//	temp.children[i].geometry.center();
+						
+					//}
+					
+					if(type=="fur"){
+						for(var i =0;i<temp.children.length;i++){
+							temp.children[i].geometry.computeBoundingBox();
+							if(item.ajust.x) temp.children[i].position.x = - ( temp.children[i].geometry.boundingBox.max.x + temp.children[0].geometry.boundingBox.min.x ) / 2;
+							if(item.ajust.y) temp.children[i].position.y =- ( temp.children[i].geometry.boundingBox.max.y + temp.children[0].geometry.boundingBox.min.y ) / 2;
+							if(item.ajust.z) temp.children[i].position.z =- ( temp.children[i].geometry.boundingBox.max.z + temp.children[0].geometry.boundingBox.min.z ) / 2;
+						}
+					}
+					
+					
+					var scaleX = item.scale.x;
+					var scaleY = item.scale.y;
+					var scaleZ = item.scale.z;
+					temp.scale.set(scaleX, scaleY, scaleZ);
+					
+					temp.position.copy(point);
+
+					
+					var HX = item.position.x;
+					var HY = item.position.y;
+					var HZ = item.position.z;
+					temp.position.x = temp.position.x + HX;//修正位置
+					temp.position.y = temp.position.y + HY;
+					temp.position.z = temp.position.z + HZ;
+					
+					if(!h){
+						temp.rotateY(Math.PI/2);
+					}
+					//门的开门方向
+					if(type=="door"){
+						if(!h){
+							switch(doorDirection){
+								case 0:
+								case 1:
+									temp.rotateY(Math.PI);
+									break;
+							}
+						}else{
+							switch(doorDirection){
+								case 0:
+								case 2:
+									temp.rotateY(Math.PI);
+									break;
+							}
+						}
+					}
+					//scene.add(temp);
+					itemGroup.add(temp);
+				});
+			});
+		}
+
+		
+		
+		
+		
+		//旋转移动控制器
+		var TransformControl = new THREE.TransformControls(camera, renderer.domElement);
+		TransformControl.setMode("translate");
+		scene.add(TransformControl);
+		var TransformControl2 = new THREE.TransformControls(camera, renderer.domElement);
+		TransformControl2.setMode("rotate");
+		scene.add(TransformControl2);
+		
+		//添加所有家具
+		scene.add(fur);
+		
+		//切换俯视的正交投影相机和透视投影相机
+		function ChangeCamera(mode){
+			ControlDispose();//解除对家具的控制
+			switch(mode){
+				case 2:			
+						camera = camera2D;
+						orbitControls3D.enabled = false;
+						orbitControls2D.enabled = true;		
+					break;
+				case 3:		
+						camera = camera3D;
+						orbitControls2D.enabled = false;
+						orbitControls3D.enabled = true;			
+					break;
+				default:
+					console.log("error");
+					break;
+			}
+		}
+
+		//2D模式
+		function ChangeTo2D(){
+			creating = false;
+			removeAllListener();
+			mainCanvas.addEventListener( 'mousedown', onMouseDown2D, false );
+		}
+		//3D一般模式
+		function ChangeTo3D(){
+			creating = false;
+			down = false;
+			DeleteMode = false;
+			removeAllListener();
+			
+			mainCanvas.addEventListener( 'mousemove', onMouseMove, false );
+			mainCanvas.addEventListener( 'mousedown', onMouseDown, false );
+			mainCanvas.addEventListener( 'mouseup', onMouseUp, false );
+			
+		}
+		var point1,point2;
+		
+		//根据两个点坐标返回角度	
+		function RotateRadius(p1,p2){		
+			dx = p2.x - p1.x;
+			dy = p2.z - p1.z;
+			d = Math.pow((dx*dx + dy*dy), 0.5);		
+			if(dy<=0){
+				var r = Math.acos(dx/d);
+			}else{
+				var r = - Math.acos(dx/d);
+			}
+			//r为要旋转的角度
+			return r;
+		}
+		
+        
+		var line1,line2,line3,line4,line5,line6,line7,line8,line9,line10,helperLine,helperLine2,helperLine3;
+		var linegroup = new THREE.Group();
+		scene.add(linegroup);
+		
+		var HelperOpen = true,helperRadius = 0.05;
+		var label;
+		function onMouseMove_AddWall(){
+				mouse.x = ( (event.clientX - mainCanvas.getBoundingClientRect().left) / mainCanvas.offsetWidth ) * 2 - 1; 
+				mouse.y = - ( (event.clientY - mainCanvas.getBoundingClientRect().top) / mainCanvas.offsetHeight ) * 2 + 1;
+				raycaster.setFromCamera( mouse, camera2D );
+				var points = raycaster.intersectObject(ground,false);
+				var p2 = points[0].point;//获得鼠标在场景坐标的位置
+				
+				
+				//checkpoints辅助线
+				if(HelperOpen){
+				if(helperLine2){
+					//scene.remove(helperLine2);
+					linegroup.remove(helperLine2);
+				}
+				if(helperLine3){
+					//scene.remove(helperLine3);
+					linegroup.remove(helperLine3);
+				}
+					//检查p2和checkpoint各点的角度是否再radius误差内，如果在，修正p2坐标，break跳出for循环（待定）  并重新计算r
+					for(var i = 0;i<checkpoints.length;i++){
+						
+						var r2 = RotateRadius(checkpoints[i],p2);
+						//水平辅助线
+						if(Math.abs(r2)<helperRadius||Math.abs(r2-Math.PI)<helperRadius){
+							p2.z = checkpoints[i].z;
+							if(creating){
+								r = RotateRadius(point1,p2);
+							}
+							//生成辅助线
+							var p3 = new THREE.Vector3(-10,2,p2.z);
+							var p4 = new THREE.Vector3(10,2,p2.z);
+							helperLine2 = createLine(p3,p4,0x87CEFF,false,2.1);
+							helperLine2.scale.x = 10;
+							//scene.add(helperLine2);
+							linegroup.add(helperLine2);
+							break;
+						}
+					}
+					for(var i = 0;i<checkpoints.length;i++){
+						
+						var r2 = RotateRadius(checkpoints[i],p2);
+
+						//竖直辅助线
+						if(Math.abs(r2-Math.PI/2)<helperRadius||Math.abs(r2+Math.PI/2)<helperRadius){
+							p2.x = checkpoints[i].x;
+							if(creating){
+								r = RotateRadius(point1,p2);
+							}
+							//生成辅助线
+							var p5 = new THREE.Vector3(p2.x,2,-10);
+							var p6 = new THREE.Vector3(p2.x,2,10);
+							helperLine3 = createLine(p5,p6,0x87CEFF,false,2.1);
+							helperLine3.scale.z = 10;
+							//scene.add(helperLine3);
+							linegroup.add(helperLine3);
+							break;
+						}
+					}
+				}
+				//checkpoints辅助线
+				
+				
+				
+				//先有点p1才能触发
+				if(creating){
+				
+				var r = RotateRadius(point1,p2);
+				
+				if(helperLine){
+					linegroup.remove(helperLine);
+				}
+				
+				
+				if(HelperOpen){
+					//水平辅助线 z相同
+					if(Math.abs(r)<helperRadius||Math.abs(r-Math.PI)<helperRadius){
+						p2.z = point1.z;
+						if(Math.abs(r)>Math.PI/2){
+							r = Math.PI;
+						}else{
+							r = 0;
+						}
+						
+							var p3 = new THREE.Vector3(-10,2,point1.z);
+							var p4 = new THREE.Vector3(10,2,point1.z);
+						
+						helperLine = createLine(p3,p4,0x87CEFF,false,2.1);
+						helperLine.scale.x = 10;
+					
+						
+						linegroup.add(helperLine);
+					}else if(Math.abs(r-Math.PI/2)<helperRadius||Math.abs(r+Math.PI/2)<helperRadius){
+						//竖直辅助线 x相同
+						p2.x = point1.x;
+						if(r>0){
+							r = Math.PI/2;
+						}else{
+							r = -Math.PI/2;
+						}
+						
+							var p3 = new THREE.Vector3(point1.x,2,-10);
+							var p4 = new THREE.Vector3(point1.x,2,10);
+						
+						helperLine = createLine(p3,p4,0x87CEFF,false,2.1);
+						helperLine.scale.z = 10;
+						
+						linegroup.add(helperLine);
+					}
+					
+				}
+				
+				
+				
+
+				var nx,nz;
+				nx = -Math.sin(r)*0.2;
+				nz = -Math.cos(r)*0.2;
+				
+				var p3 = new THREE.Vector3( point1.x + nx/2 , 2 , point1.z + nz/2 );
+				var p4 = new THREE.Vector3( p2.x + nx/2 , 2 , p2.z + nz/2 );
+				var p5 = new THREE.Vector3( point1.x - nx/2 , 2 , point1.z - nz/2 );
+				var p6 = new THREE.Vector3( p2.x - nx/2 , 2 , p2.z - nz/2 );
+				var p7 = new THREE.Vector3( point1.x + nx*3/2 , 2 , point1.z + nz*3/2 );
+				var p8 = new THREE.Vector3( p2.x + nx*3/2 , 2 , p2.z + nz*3/2 );
+				var p9 = new THREE.Vector3( point1.x + nx*5/2 , 2 , point1.z + nz*5/2 );
+				var p10 = new THREE.Vector3( p2.x + nx*5/2 , 2 , p2.z + nz*5/2 );
+				
+				
+				
+				//line1中心线
+				if(line1){
+					linegroup.remove(line1);
+				}
+				line1 = createLine(point1,p2,0x000000,true,2);
+				linegroup.add(line1);
+				
+
+				//line2,line3,line5,line6墙的轮廓线
+				if(line2){
+					linegroup.remove(line2);
+				}
+				line2 = createLine(p3,p4,0x3399ff,false,2);
+				linegroup.add(line2);
+
+				if(line3){
+					linegroup.remove(line3);
+				}
+				line3 = createLine(p5,p6,0x3399ff,false,2);
+				linegroup.add(line3);
+				
+				if(line5){
+					linegroup.remove(line5);
+				}
+				line5 = createLine(p3,p5,0x3399ff,false,2);
+				linegroup.add(line5);
+				
+				if(line6){
+					linegroup.remove(line6);
+				}
+				line6 = createLine(p4,p6,0x3399ff,false,2);
+				linegroup.add(line6);
+				
+				//line4,line7,line8测量线
+				if(line4){
+					linegroup.remove(line4);
+				}
+				line4 = createLine(p7,p8,0x959595,false,2);
+				linegroup.add(line4);
+				
+				if(line7){
+					linegroup.remove(line7);
+				}
+				line7 = createLine(p3,p9,0x959595,false,2);
+				linegroup.add(line7);
+				
+				if(line8){
+					linegroup.remove(line8);
+				}
+				line8 = createLine(p4,p10,0x959595,false,2);
+				linegroup.add(line8);
+				//长度显示
+				/*
+				var dx = p2.x - point1.x;
+				var dz = p2.z - point1.z;
+				var d = Math.round(Math.pow((dx*dx + dz*dz), 0.5)*100);	
+				if(label){
+					scene.remove(label);
+				}
+				label = createSpriteText(d);
+				label.position.set((p7.x+p8.x)/2,3,(p7.z+p8.z)/2);
+				scene.add(label);
+				*/
+			}
+		}		
+		//添加墙时的鼠标按下事件
+		var Walls = new THREE.Group();
+		scene.add(Walls);
+		var Walls2 = [];
+		var checkpoints =[];
+		var WallAddIndex = 1;
+		function onMouseDown_AddWall(){
+			mouse.x = ( (event.clientX - mainCanvas.getBoundingClientRect().left) / mainCanvas.offsetWidth ) * 2 - 1; 
+            mouse.y = - ( (event.clientY - mainCanvas.getBoundingClientRect().top) / mainCanvas.offsetHeight ) * 2 + 1;
+			raycaster.setFromCamera( mouse, camera2D );
+			var points = raycaster.intersectObject(ground,false);
+			var p = points[0].point;//获得鼠标在场景坐标的位置
+
+			
+			//左键点击有效
+			if(event.button==0){
+				if(!creating){//生成p1
+					
+					point1 = p;
+					creating = true;
+					
+					
+				}else{
+				//已经有p1，再次点击创建p2
+					//creating = false;
+					point2 = p;
+					var r = RotateRadius(point1,point2);
+					
+					
+				//checkpoints辅助线
+				if(HelperOpen){
+					for(var i = 0;i<checkpoints.length;i++){	
+						var r2 = RotateRadius(checkpoints[i],p);
+						//水平辅助线
+						if(Math.abs(r2)<helperRadius||Math.abs(r2-Math.PI)<helperRadius){
+							p.z = checkpoints[i].z;
+							r = RotateRadius(point1,p);
+							break;
+						}
+					}
+					for(var i = 0;i<checkpoints.length;i++){		
+						var r2 = RotateRadius(checkpoints[i],p);
+						//竖直辅助线
+						if(Math.abs(r2-Math.PI/2)<helperRadius||Math.abs(r2+Math.PI/2)<helperRadius){
+							p.x = checkpoints[i].x;
+							r = RotateRadius(point1,p);
+							break;
+						}
+					}
+				}
+				//checkpoints辅助线
+				
+					//辅助线
+					if(HelperOpen){
+						//水平辅助线 z相同
+						if(Math.abs(r)<helperRadius||Math.abs(r-Math.PI)<helperRadius){
+							point2.z = point1.z;
+							if(Math.abs(r)>Math.PI/2){
+								r = Math.PI;
+							}else{
+								r = 0;
+							}
+						
+					}else if(Math.abs(r-Math.PI/2)<helperRadius||Math.abs(r+Math.PI/2)<helperRadius){
+							//竖直辅助线 x相同
+							point2.x = point1.x;
+							if(r>0){
+								r = Math.PI/2;
+							}else{
+								r = -Math.PI/2;
+							}	
+					}
+					}
+					//单独添加墙时给墙x和z一定的偏移量来处理z-fighting问题
+					var WallOffset = 0.001*WallAddIndex;
+					point1.x = point1.x + WallOffset;
+					point2.x = point2.x + WallOffset;
+					point1.z = point1.z + WallOffset;
+					point2.z = point2.z + WallOffset;
+					WallAddIndex = WallAddIndex + 1;
+					
+					var wall = CreateWall(point1,point2,r);//创建墙
+					Walls.add(wall);
+					Walls2.push({
+						obj:wall,
+						p1:point1,
+						p2:point2			
+					});
+					checkpoints.push(point1);
+					checkpoints.push(point2);
+					
+					if(line1){
+						scene.remove(line1);
+					}
+					if(line2){
+						scene.remove(line2);
+					}
+					if(line3){
+						scene.remove(line3);
+					}
+					if(line5){
+						scene.remove(line5);
+					}
+					if(line6){
+						scene.remove(line6);
+					}
+					
+					//继续创建下一个墙
+					point1 = point2;
+				}
+			}else{//右键点击取消
+			//取消p1
+				creating = false;
+				disposeLine(true);
+			}
+		}
+		
+		function createLine(p1,p2,c,dash,height){
+			var geometry = new THREE.Geometry();
+			geometry.vertices.push(
+				new THREE.Vector3( p1.x, height, p1.z ),
+				new THREE.Vector3( p2.x, height, p2.z )	
+			);
+			if(dash){
+				var material = new THREE.LineDashedMaterial({
+					color: c,
+					linewidth: 1,
+					scale: 1,
+					dashSize: 0.2,
+					gapSize: 0.1,
+				});
+				
+			}else{
+				var material = new THREE.LineBasicMaterial({color: c});
+			}
+			
+			var line = new THREE.Line(geometry, material); 
+			line.computeLineDistances();
+			return line;
+		}
+		
+		
+		
+		function createSpriteText(message){
+			var c = document.createElement("canvas");
+			var ctx = c.getContext("2d");
+			//先用画布将文字画出
+			ctx.fillStyle = "#000000";
+			ctx.font = "50px Arial";
+			ctx.lineWidth = 1;
+			ctx.fillText(message,110,90);
+			var textureMessage = new THREE.Texture(c);
+			textureMessage.needsUpdate = true;
+			//使用Sprite显示文字
+			var material = new THREE.SpriteMaterial({map:textureMessage,transparent:true});
+			var textObj = new THREE.Sprite(material);
+			//textObj.scale.set(0.5 * 100, 0.25 * 100, 0.75 * 100);
+			var n = 3;
+			textObj.scale.set(0.5*n, 0.25*n, 0.75*n);
+			return textObj;
+		}
+		
+		
+		function createLine2(ArrayGeometry,c){
+			var material = new THREE.LineDashedMaterial({
+				color: c,
+				linewidth: 1,
+				scale: 1,
+				dashSize: 0.2,
+				gapSize: 0.1,
+			});
+			var line = new THREE.Line(ArrayGeometry, material); 
+			return line;
+		}
+		
+		var point_AddRoom;
+		var point1_Room,point2_Room;
+		var RoomLine1,RoomLine2;
+		function onMouseMove_AddRoom(){
+				mouse.x = ( (event.clientX - mainCanvas.getBoundingClientRect().left) / mainCanvas.offsetWidth ) * 2 - 1; 
+				mouse.y = - ( (event.clientY - mainCanvas.getBoundingClientRect().top) / mainCanvas.offsetHeight ) * 2 + 1;
+				raycaster.setFromCamera( mouse, camera2D );
+				var points = raycaster.intersectObject(ground,false);
+				var p2 = points[0].point;//获得鼠标在场景坐标的位置
+				
+				
+				//checkpoints辅助线  生成水平或竖直的辅助线
+				if(HelperOpen){
+					if(helperLine2){
+						//scene.remove(helperLine2);
+						linegroup.remove(helperLine2);
+					}
+					if(helperLine3){
+						//scene.remove(helperLine3);
+						linegroup.remove(helperLine3);
+					}
+					//检查p2和checkpoint各点的角度是否再radius误差内，如果在，修正p2坐标，break跳出for循环（待定）  并重新计算r
+					for(var i = 0;i<checkpoints.length;i++){
+						
+						var r2 = RotateRadius(checkpoints[i],p2);
+						//水平辅助线
+						if(Math.abs(r2)<helperRadius||Math.abs(r2-Math.PI)<helperRadius){
+							p2.z = checkpoints[i].z;
+							if(creating){
+								r = RotateRadius(point1_Room,p2);
+							}
+							//生成辅助线
+							var p3 = new THREE.Vector3(-10,2,p2.z);
+							var p4 = new THREE.Vector3(10,2,p2.z);
+							helperLine2 = createLine(p3,p4,0x87CEFF,false,2.1);
+							helperLine2.scale.x = 10;
+							//scene.add(helperLine2);
+							linegroup.add(helperLine2);
+							break;
+						}
+					}
+					for(var i = 0;i<checkpoints.length;i++){
+						
+						var r2 = RotateRadius(checkpoints[i],p2);
+
+						//竖直辅助线
+						if(Math.abs(r2-Math.PI/2)<helperRadius||Math.abs(r2+Math.PI/2)<helperRadius){
+							p2.x = checkpoints[i].x;
+							if(creating){
+								r = RotateRadius(point1_Room,p2);
+							}
+							//生成辅助线
+							var p5 = new THREE.Vector3(p2.x,2,-10);
+							var p6 = new THREE.Vector3(p2.x,2,10);
+							helperLine3 = createLine(p5,p6,0x87CEFF,false,2.1);
+							helperLine3.scale.z = 10;
+							//scene.add(helperLine3);
+							linegroup.add(helperLine3);
+							break;
+						}
+					}
+				}
+				//checkpoints辅助线
+				
+				//先有点p1才能触发
+				if(creating){
+					
+					var r = RotateRadius(point1_Room,p2);
+					
+					if(helperLine){
+						//scene.remove(helperLine);
+						linegroup.remove(helperLine);
+					}
+					//p1的辅助线
+					if(HelperOpen){
+						//水平辅助线 z相同
+						if(Math.abs(r)<helperRadius||Math.abs(r-Math.PI)<helperRadius){
+							p2.z = point1_Room.z;
+							if(Math.abs(r)>Math.PI/2){
+								r = Math.PI;
+							}else{
+								r = 0;
+							}
+							
+							var p3 = new THREE.Vector3(-10,2,point1_Room.z);
+							var p4 = new THREE.Vector3(10,2,point1_Room.z);
+							
+							helperLine = createLine(p3,p4,0x87CEFF,false,2.1);
+							helperLine.scale.x = 10;
+
+							//scene.add(helperLine);
+							linegroup.add(helperLine);
+							
+						}else if(Math.abs(r-Math.PI/2)<helperRadius||Math.abs(r+Math.PI/2)<helperRadius){
+							//竖直辅助线 x相同
+							p2.x = point1_Room.x;
+							if(r>0){
+								r = Math.PI/2;
+							}else{
+								r = -Math.PI/2;
+							}
+						
+							var p3 = new THREE.Vector3(point1_Room.x,2,-10);
+							var p4 = new THREE.Vector3(point1_Room.x,2,10);
+							
+							helperLine = createLine(p3,p4,0x87CEFF,false,2.1);
+							helperLine.scale.z = 10;
+							//scene.add(helperLine);
+							linegroup.add(helperLine);
+						}
+					
+					}
+					//p1的辅助线end
+				
+
+				point_AddRoom = p2;
+				
+				
+				var dx = p2.x - point1_Room.x;
+				var dz = p2.z - point1_Room.z;
+				
+				var nx = 0.1
+				var nz;
+				if(dx * dz < 0 ){
+					nz = -0.1;
+				}else{
+					nz = 0.1;
+				}
+				
+				//var nx = 0.1,nz = 0.1;
+				var p1 = new THREE.Vector3();
+				p1.copy(point1_Room);
+
+				
+				var p3 = new THREE.Vector3( p2.x , 2 , p1.z );
+				var p4 = new THREE.Vector3( p1.x , 2 , p2.z );
+				
+				var p5 = new THREE.Vector3( p1.x + nx , 2 , p1.z + nz );
+				var p6 = new THREE.Vector3( p3.x - nx , 2 , p3.z + nz );
+				var p7 = new THREE.Vector3( p2.x - nx , 2 , p2.z - nz );
+				var p8 = new THREE.Vector3( p4.x + nx , 2 , p4.z - nz );
+				
+				var p9 = new THREE.Vector3( p1.x - nx , 2 , p1.z - nz );
+				var p10 = new THREE.Vector3( p3.x + nx , 2 , p3.z - nz );
+				var p11 = new THREE.Vector3( p2.x + nx , 2 , p2.z + nz );
+				var p12 = new THREE.Vector3( p4.x - nx , 2 , p4.z + nz );
+				
+				
+				var geometry = new THREE.Geometry();
+				geometry.vertices.push(p5,p6,p7,p8,p5);
+				
+				if(line1){
+					//scene.remove(line1);
+					linegroup.remove(line1);
+				}
+				line1 = createLine2(geometry,0x000000);
+				//scene.add(line1);
+				linegroup.add(line1);
+				
+				var geometry2 = new THREE.Geometry();
+				geometry2.vertices.push(p9,p10,p11,p12,p9);
+				if(line2){
+					//scene.remove(line2);
+					linegroup.remove(line2);
+				}
+				line2 = createLine2(geometry2,0x000000);
+				//scene.add(line2);
+				linegroup.add(line2);
+
+				//长度显示
+				
+				if(showline1){
+					linegroup.remove(showline1);
+				}
+				showline1 = ShowLineLength(p1,p3);
+				linegroup.add(showline1);
+				
+				if(showline2){
+					linegroup.remove(showline2);
+				}
+				showline2 = ShowLineLength(p3,p2);
+				linegroup.add(showline2);
+
+			}else{
+				point_AddRoom = p2;
+			}
+		}
+		
+		var showline1,showline2;
+		function ShowLineLength(p1,p2){
+			var r = RotateRadius(p1,p2);
+			var nx,nz;
+			nx = -Math.sin(r)*0.2;
+			nz = -Math.cos(r)*0.2;
+					
+			var p3 = new THREE.Vector3( p1.x + nx/2 , 2 , p1.z + nz/2 );
+			var p4 = new THREE.Vector3( p2.x + nx/2 , 2 , p2.z + nz/2 );
+			var p7 = new THREE.Vector3( p1.x + nx*3/2 , 2 , p1.z + nz*3/2 );
+			var p8 = new THREE.Vector3( p2.x + nx*3/2 , 2 , p2.z + nz*3/2 );
+			var p9 = new THREE.Vector3( p1.x + nx*5/2 , 2 , p1.z + nz*5/2 );
+			var p10 = new THREE.Vector3( p2.x + nx*5/2 , 2 , p2.z + nz*5/2 );
+
+			var geometry = new THREE.Geometry();
+			geometry.vertices.push(p3,p9,p7,p8,p4,p10);
+			var line = createLine2(geometry,0x959595);
+			return line;
+		}
+
+		
+		//在p1和p2横坐标或纵坐标相同时不允许创建墙
+		function onMouseDown_AddRoom(){
+			p = point_AddRoom;
+			//左键点击有效
+			if(event.button==0){
+				if(!creating){//生成p1
+					point1_Room = p;
+					creating = true;			
+				}else{
+				//已经有p1，再次点击创建p2
+					//creating = false;
+					point2 = p;
+					var r = RotateRadius(point1_Room,point2);
+					
+					
+				//checkpoints辅助线
+				if(HelperOpen){
+					for(var i = 0;i<checkpoints.length;i++){	
+						var r2 = RotateRadius(checkpoints[i],p);
+						//水平辅助线
+						if(Math.abs(r2)<helperRadius||Math.abs(r2-Math.PI)<helperRadius){
+							p.z = checkpoints[i].z;
+							r = RotateRadius(point1_Room,p);
+							break;
+						}
+					}
+					for(var i = 0;i<checkpoints.length;i++){		
+						var r2 = RotateRadius(checkpoints[i],p);
+						//竖直辅助线
+						if(Math.abs(r2-Math.PI/2)<helperRadius||Math.abs(r2+Math.PI/2)<helperRadius){
+							p.x = checkpoints[i].x;
+							r = RotateRadius(point1_Room,p);
+							break;
+						}
+					}
+				}
+				//checkpoints辅助线end
+					
+					if(point2.x == point1_Room.x || point2.z == point1_Room.z){
+						return;
+					}else{
+
+						var dx = point2.x - point1_Room.x;
+						var dz = point2.z - point1_Room.z;
+
+						var p1 = new THREE.Vector3();
+						p1.copy(point1_Room);
+						var p2 = new THREE.Vector3();
+						p2.copy(point2);
+				
+						var p3 = new THREE.Vector3( p2.x , 2 , p1.z );
+						var p4 = new THREE.Vector3( p1.x , 2 , p2.z );
+			
+						var dd1 = p2.x - p1.x;
+						var dd2 = p2.z - p1.z;
+						
+						//使房间的四面墙向中间缩进
+						if(dd1>0&&dd2>0){
+							CreateAndAddWall(p1,p3,0,2);
+							CreateAndAddWall(p2,p4,0,4);
+							CreateAndAddWall(p1,p4,Math.PI/2,1);
+							CreateAndAddWall(p2,p3,Math.PI/2,3);
+						}else if(dd1>0&&dd2<0){
+							CreateAndAddWall(p1,p3,0,4);
+							CreateAndAddWall(p2,p4,0,2);
+							CreateAndAddWall(p1,p4,Math.PI/2,1);
+							CreateAndAddWall(p2,p3,Math.PI/2,3);
+						}else if(dd1<0&&dd2>0){
+							CreateAndAddWall(p1,p3,0,2);
+							CreateAndAddWall(p2,p4,0,4);
+							CreateAndAddWall(p1,p4,Math.PI/2,3);
+							CreateAndAddWall(p2,p3,Math.PI/2,1);
+						}else if(dd1<0&&dd2<0){
+							CreateAndAddWall(p1,p3,0,4);
+							CreateAndAddWall(p2,p4,0,2);
+							CreateAndAddWall(p1,p4,Math.PI/2,3);
+							CreateAndAddWall(p2,p3,Math.PI/2,1);
+						}
+						RoomIndex = RoomIndex + 1;
+						
+					
+						//创建地板
+						createFloor(p1,p2);
+					
+						disposeLine(true);
+					
+						//继续创建下一个墙
+						point1_Room = point2;
+					}
+				}
+			}else{//右键点击取消
+			//取消p1
+				creating = false;
+				disposeLine(true);
+			}
+		}
+		var floorIndex = 1;//添加一个偏移量解决z-fighting问题
+		var NowFloor = "floor03";
+		var LastFloor;
+		var AjustType;
+		var FloorReapeatX = 4;
+		var FloorReapeatY = 4;
+		function createFloor(p1,p2){
+			AjustType = "floor";
+			var dx = Math.abs(p1.x - p2.x);
+			var dz = Math.abs(p1.z - p2.z);
+			var point = new THREE.Vector3( (p1.x+p2.x)/2 , (p1.y+p2.y)/2 , (p1.z+p2.z)/2 );
+			var plane = new THREE.PlaneGeometry(dx,dz);	
+
+			var texture= new THREE.TextureLoader().load('image/floor/'+NowFloor+'.jpg');
+			
+
+			texture.wrapS = THREE.RepeatWrapping;
+			texture.wrapT = THREE.RepeatWrapping;
+			texture.repeat.set(FloorReapeatX,FloorReapeatY);
+			
+			var material = new THREE.MeshBasicMaterial({map: texture});
+			var ground = new THREE.Mesh(plane,material);
+
+			LastFloor = ground;
+			
+			ground.rotation.set(-0.5 * Math.PI, 0, 0);
+			ground.position.set(point.x,-1+floorIndex*0.01,point.z);
+			floorIndex = floorIndex + 1;
+			FloorGroup.add(ground);
+		}
+		function updateFloor(){
+			var texture= new THREE.TextureLoader().load('image/floor/'+NowFloor+'.jpg');
+			texture.wrapS = THREE.RepeatWrapping;
+			texture.wrapT = THREE.RepeatWrapping;
+			texture.repeat.set(FloorReapeatX,FloorReapeatY);
+			LastFloor.material.map = texture; 
+		}
+		
+		var RoomIndex = 1;
+		function CreateAndAddWall(point1,point2,r,type){
+		//先检查墙是否重复
+			//完全重复
+			
+			for(var i =0;i<Walls2.length;i++){
+				if((Walls2[i].p1.equals(point1)&&Walls2[i].p2.equals(point2))||(Walls2[i].p2.equals(point1)&&Walls2[i].p1.equals(point2))){
+					return;
+				}
+			}
+
+			//分开检查水平和竖直的墙
+		//墙没有重复
+			//解决z-fighting
+			var offsetRoom = 0.0001*RoomIndex;
+			switch(type){
+				case 1:
+					point1.x = point1.x + offsetRoom;
+					point2.x = point2.x + offsetRoom;
+					break;
+				case 2:
+					point1.z = point1.z + offsetRoom;
+					point2.z = point2.z + offsetRoom;
+					break;
+				case 3:
+					point1.x = point1.x - offsetRoom;
+					point2.x = point2.x - offsetRoom;
+					break;
+				case 4:
+					point1.z = point1.z - offsetRoom;
+					point2.z = point2.z - offsetRoom;
+					break;
+			}
+			
+			
+			var wall = CreateWall(point1,point2,r);//创建墙的实体
+			Walls.add(wall);
+			Walls2.push({
+				obj:wall,
+				p1:point1,
+				p2:point2			
+			});
+			checkpoints.push(point1);
+			checkpoints.push(point2);
+		
+			
+		}
+		
+		function AddWindow(obj){
+			var $temp = $(obj);
+			if(LastBtn){
+				LastBtn.css("background-color",'#222831');//还原上一个按钮
+				if(!LastBtn.is($temp)){
+					LastBtn  = $temp;//不是同一个按钮
+					LastBtn.css("background-color",'#7971ea');//新按钮焦点
+				}else{//是同一个按钮
+					ChangeTo2D();
+					showFurItem(false);
+					LastBtn = null;
+					return;
+				}
+			}else{//这是第一个按钮
+				LastBtn  = $temp;
+				LastBtn.css("background-color",'#7971ea');
+			}
+			LoadList("Window");
+			creating = false;
+			removeAllListener();
+			mainCanvas.addEventListener( 'mousemove', onMouseMove_AddWindow, false );
+			mainCanvas.addEventListener( 'mousedown', onMouseDown_AddWindow, false );
+			showFurItem(true);
+		}
+		
+
+		
+		var window1;
+		var NowH = true;//记录当前辅助线为水平还是垂直
+		//添加窗的水平与竖直辅助
+		var HelperOpen_Window_horizon = true;//窗的水平吸附
+		var HelperOpen_Window_vertical = true;//窗的垂直吸附
+		var point_Window;
+		function onMouseMove_AddWindow(){
+			mouse.x = ( (event.clientX - mainCanvas.getBoundingClientRect().left) / mainCanvas.offsetWidth ) * 2 - 1; 
+            mouse.y = - ( (event.clientY - mainCanvas.getBoundingClientRect().top) / mainCanvas.offsetHeight ) * 2 + 1;
+			raycaster.setFromCamera( mouse, camera2D );
+			var points = raycaster.intersectObject(ground,false);
+			point_Window = points[0].point;
+			
+			
+				if(helperLine2){
+					//scene.remove(helperLine2);
+					linegroup.remove(helperLine2);
+				}
+				if(helperLine3){
+					//scene.remove(helperLine3);
+					linegroup.remove(helperLine3);
+				}
+				if(window1){
+					//scene.remove(window1);
+					linegroup.remove(window1);
+				}
+				//检查p2和checkpoint各点的角度是否再radius误差内，如果在，修正p2坐标，break跳出for循环（待定）  并重新计算r
+				if(HelperOpen_Window_horizon){
+					for(var i = 0;i<checkpoints.length;i++){
+						
+						var r2 = RotateRadius(checkpoints[i],point_Window);
+						//水平辅助线
+						if(Math.abs(r2)<helperRadius||Math.abs(r2-Math.PI)<helperRadius){
+							point_Window.z = checkpoints[i].z;
+							//生成辅助线
+							var p3 = new THREE.Vector3(-10,2,point_Window.z);
+							var p4 = new THREE.Vector3(10,2,point_Window.z);
+							helperLine2 = createLine(p3,p4,0x87CEFF,false,2.1);
+							helperLine2.scale.x = 10;
+							//scene.add(helperLine2);
+							linegroup.add(helperLine2);
+							//生成窗轮廓线
+							window1 = createWindow(point_Window,true);
+							
+							//scene.add(window1);
+							linegroup.add(window1);
+							NowH = true;
+							
+							return;
+							//break;
+						}
+					}
+				}
+				if(HelperOpen_Window_vertical){
+					for(var i = 0;i<checkpoints.length;i++){
+						
+						var r2 = RotateRadius(checkpoints[i],point_Window);
+
+						//竖直辅助线
+						if(Math.abs(r2-Math.PI/2)<helperRadius||Math.abs(r2+Math.PI/2)<helperRadius){
+							point_Window.x = checkpoints[i].x;
+							//生成辅助线
+							var p5 = new THREE.Vector3(point_Window.x,2,-10);
+							var p6 = new THREE.Vector3(point_Window.x,2,10);
+							helperLine3 = createLine(p5,p6,0x87CEFF,false,2.1);
+							helperLine3.scale.z = 10;
+							//scene.add(helperLine3);
+							linegroup.add(helperLine3);
+							//生成窗轮廓线
+							window1 = createWindow(point_Window,false);
+								
+							//scene.add(window1);
+							linegroup.add(window1);
+							NowH = false;
+							
+							return;
+							//break;
+						}
+					}
+				}
+		}
+		
+		
+
+		
+		//返回窗的轮廓线
+		function createWindow(p,Horizon){
+			var width = 0.2,length = 1,h = 2;
+			var x = p.x , z = p.z;
+			var dx,dy;
+			//水平
+			if(Horizon){
+				dx = length/2;
+				dz = width/2;
+			}else{//竖直
+				dx = width/2;
+				dz = length/2;
+			}
+			var p1 = new THREE.Vector3(x+dx,h,z+dz);
+			var p2 = new THREE.Vector3(x+dx,h,z-dz);
+			var p3 = new THREE.Vector3(x-dx,h,z-dz);
+			var p4 = new THREE.Vector3(x-dx,h,z+dz);
+			
+			
+			var geometry = new THREE.Geometry();
+			geometry.vertices.push(p1,p2,p3,p4,p1);
+			var material = new THREE.LineDashedMaterial({
+				color: 0x0000ff,
+				linewidth: 1,
+				scale: 1,
+				dashSize: 0.2,
+				gapSize: 0.1,
+			});
+			var line = new THREE.Line(geometry, material); 
+			return line;
+		}
+		
+		
+		//直线上有点p1,p2 求p3到直线的垂足pedal
+		function getPedal(p1,p2,p3){
+			var pedal = new THREE.Vector3(0,p1.y,0);
+			var k = (p2.z-p1.z)/(p2.x-p1.x);
+			var m = p2.z - k*p2.x;
+			pedal.x = (p3.x + k*p3.z - k*m)/(k*k + 1);
+			pedal.z = k*pedal.x + m;
+			return pedal;
+		}
+		
+		var WindowLine;//窗的轮廓线，添加窗后应该一直存在
+		var WindowAddIndex = 1;
+		var NowWindowIndex = 0;
+		function onMouseDown_AddWindow(){
+			if(event.button==0){
+			
+			
+			
+			var NowWall;
+			var res = getWall(point_Window);//注意返回的是Walls2对象 {obj:**,p1:**,p2:**}
+			
+			if(window1){
+				//scene.remove(window1);
+				linegroup.remove(window1);
+			}
+			for(var i=0;i<res.length;i++){
+			
+			NowWall = res[i];
+			
+			if(NowWall){
+				//保存窗轮廓线
+				WindowLine = window1.clone();
+				//scene.add(WindowLine);
+				linegroup.add(WindowLine);
+			
+				var point1 = new THREE.Vector3();
+				var point2 = new THREE.Vector3();
+				//记录p1,p2
+				point1.copy(NowWall.p1);
+				point2.copy(NowWall.p2);
+
+				
+				if(NowH){
+					var window = createWindow2(point_Window,true);
+				}else{
+					var window = createWindow2(point_Window,false);
+				}
+
+				var bsp1 = new ThreeBSP(NowWall.obj);
+				var bsp2 = new ThreeBSP(window);
+				
+				var resultBSP = bsp1.subtract(bsp2);
+				var result = resultBSP.toMesh();
+				//更新模型的面和顶点的数据
+				result.geometry.computeFaceNormals();
+				result.geometry.computeVertexNormals();
+
+				var material3 = new THREE.MeshLambertMaterial({color: 0xCCCCCC});
+				result.material = material3;
+				
+				
+				
+				result.position.copy(NowWall.obj.position);
+				
+				var WindowAddOffset = 0.001*WindowAddIndex;
+				result.translateX(WindowAddOffset);
+				result.translateY(WindowAddOffset);
+				result.translateZ(WindowAddOffset);
+				WindowAddIndex = WindowAddIndex + 1;
+				
+				result.rotation.copy(NowWall.obj.rotation);
+				result.scale.copy(NowWall.obj.scale);
+				
+				
+				
+				var box = NowWall.obj.children[0];
+				result.add(box);
+				NowWall.obj.remove(box);
+				
+
+				scene.add(result);
+
+				//删除旧的墙
+				DeleteWall(NowWall.obj);
+				//记录新墙
+				Walls.add(result);
+				Walls2.push({
+					obj:result,
+					p1:point1,
+					p2:point2			
+				});
+				checkpoints.push(point1);
+				checkpoints.push(point2);
+				
+				
+			}
+			}
+				/*
+				if(NowH){
+					LoadItem("window",0,window.position,true);
+				}else{
+					LoadItem("window",0,window.position,false);
+				}
+				*/
+				
+				LoadItem("window",NowWindowIndex,window.position,NowH);
+			
+			}
+		}
+		
+		//传入世界坐标，根据世界坐标获得墙 注意返回的是Walls2对象 {obj:**,p1:**,p2:**}
+		var ResultOfGetWall = [];
+		function getWall(p){
+			ResultOfGetWall = [];
+			var temp1 = new THREE.Vector3(p.x,-2,p.z);
+			var temp2 = new THREE.Vector3(0,1,0);
+			raycaster.set(temp1,temp2);
+			var points = raycaster.intersectObjects(Walls.children,false);
+			var NowWall;
+			if(points.length>0){
+				for(var j=0;j<points.length;j++){
+					var w = points[j].object;
+					//在Walls2中寻找匹配的墙
+					for(var i=0;i<Walls2.length;i++){
+						if(w.id == Walls2[i].obj.id){
+							//{obj:**,p1:**,p2:**}
+							ResultOfGetWall.push(Walls2[i]);
+						}
+					}
+				}
+			}
+			return ResultOfGetWall;
+		}	
+
+		//返回 要扣去窗大小 的方块
+		var windowheight = 0;//控制窗的高度
+		function createWindow2(p,h){
+			if(h){
+				var geometry = new THREE.CubeGeometry(1,1,1);
+			}else{
+				var geometry = new THREE.CubeGeometry(1,1,1);
+			}
+			
+			var material = new THREE.MeshLambertMaterial({color: 0x0000ff});//兰伯特材质 对不同颜色的光有反应 红光 = 红色
+			var cube = new THREE.Mesh(geometry, material); //把材质和立方体结合
+			
+			cube.position.x = p.x;
+			cube.position.y = windowheight;
+			cube.position.z = p.z;
+			return cube;
+		}
+		
+		function disposeLine(All){
+			if(All){
+				if(line4){
+					linegroup.remove(line4);
+				}
+				if(line7){
+					linegroup.remove(line7);
+				}
+				if(line8){
+					linegroup.remove(line8);
+				}
+			}
+				if(line1){
+					linegroup.remove(line1);
+				}
+				if(line2){
+					linegroup.remove(line2);
+				}
+				if(line3){
+					linegroup.remove(line3);
+				}
+				
+				if(line5){
+					linegroup.remove(line5);
+				}
+				if(line6){
+					linegroup.remove(line6);
+				}
+				
+				if(helperLine){
+					linegroup.remove(helperLine);
+				}
+				if(helperLine2){
+					linegroup.remove(helperLine2);
+				}
+				if(helperLine3){
+					linegroup.remove(helperLine3);
+				}
+				if(label){
+					scene.remove(label);
+				}
+				if(showline1){
+					linegroup.remove(showline1);
+				}
+				if(showline2){
+					linegroup.remove(showline2);
+				}
+				if(DoorLine){
+					linegroup.remove(DoorLine);
+				}
+				if(DoorLine2){
+					linegroup.remove(DoorLine);
+				}
+		}
+		
+		
+		function CreateWall(p1,p2,r){
+			var geometry3 = new THREE.CubeGeometry(0.2,WallHeight,2);
+			var material3 = new THREE.MeshBasicMaterial({color: 0xFFFFFF});//color: 0xFFFFFF,vertexColors: THREE.FaceColors对每个面单独着色
+			var wall = new THREE.Mesh(geometry3, material3); 
+			box = new THREE.BoxHelper( wall, 0x000000 );
+			wall.add(box);
+			wall.rotateY(Math.PI/2);
+			
+			var dx = p2.x - p1.x;
+			var dz = p2.z - p1.z;
+			var d = Math.pow((dx*dx + dz*dz), 0.5);	
+			
+			wall.scale.z = d/2+0.099;//加0.1不然墙会缺一角
+			
+			var offsetRoom = 0.0001*RoomIndex
+			wall.position.set((p1.x+p2.x)/2,WallHeight/2-1+offsetRoom,(p1.z+p2.z)/2);
+			
+			wall.rotateY(r);
+			
+			return wall;
+		}
+		//计算两点间距离
+		function getDistance(p1,p2){
+			var dx = p1.x-p2.x;
+			var dz = p1.z-p2.z;
+			var res = Math.round(Math.sqrt(Math.abs(dx*dx+dz*dz))*1000)/1000;//保留到小数点后三位
+			return res;
+		}
+		
+		function onMouseDown2D(){
+		
+			mouse.x = ( (event.clientX - mainCanvas.getBoundingClientRect().left) / mainCanvas.offsetWidth ) * 2 - 1; 
+            mouse.y = - ( (event.clientY - mainCanvas.getBoundingClientRect().top) / mainCanvas.offsetHeight ) * 2 + 1;
+			raycaster.setFromCamera( mouse, camera2D );
+			var points = raycaster.intersectObjects(Walls.children,false);
+			
+
+			
+			if(points.length>0){
+				var w = points[0].object;
+				var NowWall;
+				//在Walls2中寻找匹配的墙
+				for(var i=0;i<Walls2.length;i++){
+					if(w.id == Walls2[i].obj.id){
+						NowWall = Walls2[i];//NowWall = {obj:**,p1:**,p2:**}
+						
+					}
+				}
+				
+				
+				//成功找到匹配的墙
+				if(NowWall){
+					var p1 = NowWall.p1;
+					var p2 = NowWall.p2;
+					
+					var r = RotateRadius(p1,p2);
+					
+					var nx,nz;
+					nx = -Math.sin(r)*0.2;
+					nz = -Math.cos(r)*0.2;
+					
+					var p3 = new THREE.Vector3( p1.x + nx/2 , 2 , p1.z + nz/2 );
+					var p4 = new THREE.Vector3( p2.x + nx/2 , 2 , p2.z + nz/2 );
+					var p7 = new THREE.Vector3( p1.x + nx*3/2 , 2 , p1.z + nz*3/2 );
+					var p8 = new THREE.Vector3( p2.x + nx*3/2 , 2 , p2.z + nz*3/2 );
+					var p9 = new THREE.Vector3( p1.x + nx*5/2 , 2 , p1.z + nz*5/2 );
+					var p10 = new THREE.Vector3( p2.x + nx*5/2 , 2 , p2.z + nz*5/2 );
+					
+					if(showline1){
+						//scene.remove(showline1);
+						linegroup.remove(showline1);
+					}
+					showline1 = ShowLineLength(p7,p8);
+					//scene.add(showline1);
+					linegroup.add(showline1);
+					
+					//长度显示
+				var dx = p2.x - p1.x;
+				var dz = p2.z - p1.z;
+				var d = Math.pow((dx*dx + dz*dz), 0.5);	
+				if(label){
+					scene.remove(label);
+				}
+				label = createSpriteText(Math.round(d*100));
+				label.position.set((p7.x+p8.x)/2,2.2,(p7.z+p8.z)/2);
+				scene.add(label);
+				}
+				
+			
+			}
+			
+
+		}
+		//DeleteWall(Walls2[i].obj); 参数为要删除的墙对象
+		function DeleteWall(w){
+			for(var i=0;i<Walls2.length;i++){
+					if(w.id == Walls2[i].obj.id){
+						Walls.remove(w);
+						for(var j=0;j<checkpoints.length;j++){
+							if(Walls2[i].p1==checkpoints[j]){
+								checkpoints.splice(j,1);
+								break;
+							}
+						}
+						for(var k=0;k<checkpoints.length;k++){
+							if(Walls2[i].p2==checkpoints[k]){
+								checkpoints.splice(k,1);
+								break;
+							}
+						}
+						Walls2.splice(i,1);
+					}
+			}
+			
+		}
+		
+		
+		//解除对家具的控制
+		function ControlDispose(){
+			INTERSECTED2 = null;
+			NowItem = null;
+			TransformControl.detach();
+			TransformControl2.detach();
+		}
+
+		
+		var options ={
+			Move: function(){
+			},
+			DeleteBtn : function(){
+				alert("Bang!");
+			},
+			//y轴坐标
+			//verticalPos = 0
+		};
+
+		
+
+		//Raycaster 将鼠标二维坐标转为三维坐标
+		var raycaster = new THREE.Raycaster();
+		var mouse = new THREE.Vector2();
+		var intersects,INTERSECTED,INTERSECTED2;//intersects是记录射线经过的所有元素的数组,INTERSECTED是数组中最近的一个 [0]
+
+		//为 鼠标移动事件 添加监听
+		
+		//mainCanvas.addEventListener( 'mousemove', onMouseMove, false );
+		
+		var NowHover;//记录最近鼠标悬停对象
+		function onMouseMove( event ) {
+			if(!down){
+				//坐标转换
+				mouse.x = ( (event.clientX - mainCanvas.getBoundingClientRect().left) / mainCanvas.offsetWidth ) * 2 - 1; 
+				mouse.y = - ( (event.clientY - mainCanvas.getBoundingClientRect().top) / mainCanvas.offsetHeight ) * 2 + 1;
+				raycaster.setFromCamera( mouse, camera3D );
+				var Choosed = raycaster.intersectObjects(fur.children);
+			
+				//数组不为空
+				if(Choosed.length>0){
+		
+						NowHover = Choosed[0].object;				
+					}else{
+						NowHover = null;
+					}					
+			}
+		}
+		
+		
+		
+		
+		var DeleteMode = false;//删除模式
+		//鼠标点击选中物体
+		var down = false;
+		//mainCanvas.addEventListener( 'mousedown', onMouseDown, false );
+		//mainCanvas.addEventListener( 'mouseup', onMouseUp, false );
+		function onMouseDown(){
+			down = true;
+			if(event.button==0){
+				mouse.x = ( (event.clientX - mainCanvas.getBoundingClientRect().left) / mainCanvas.offsetWidth ) * 2 - 1; 
+				mouse.y = - ( (event.clientY - mainCanvas.getBoundingClientRect().top) / mainCanvas.offsetHeight ) * 2 + 1;
+				raycaster.setFromCamera( mouse, camera3D );
+				var Choosed = raycaster.intersectObjects( fur.children,true);
+					//数组不为空
+					if(Choosed.length>0){
+						//鼠标指向的物体改变了，还原前一个物体的颜色
+						if (INTERSECTED2 != Choosed[0].object){
+							
+							INTERSECTED2 = Choosed[0].object;
+							
+							if(DeleteMode){
+								if(INTERSECTED2.parent!=fur){
+									//NowItem = INTERSECTED2.parent;	
+									fur.remove(INTERSECTED2.parent);
+								}else{
+									fur.remove(INTERSECTED2);	
+								}			
+
+							}else{
+								
+
+								if(INTERSECTED2.parent!=fur){
+									NowItem = INTERSECTED2.parent;											
+								}else{
+									NowItem = INTERSECTED2;	
+								}				
+								//为选中的家具添加控制器
+								
+								TransformControl.attach(NowItem);
+								TransformControl2.attach(NowItem);
+							}
+						}
+						//}
+					}else{
+						if(DeleteMode){
+							ControlDispose();
+						}
+						INTERSECTED2 = null;
+						//NowItem = null;
+						
+						//单击空白位置解除选择
+						//TransformControl.detach();
+						//TransformControl2.detach();
+					}
+					
+			//右键取消选择
+			}else if(event.button==2){
+				ControlDispose();
+			}
+		}
+		
+		function onMouseUp(){
+			down = false;
+		}
+		
+		//渲染函数
+		//scene.add(cube2);
+        function render(){
+			TransformControl.update();
+			TransformControl2.update();
+            requestAnimationFrame(render);
+			//第一人称视角更新
+			if ( controlsEnabled === true ) {
+				var control = controls.getObject();
+				var delta = clock.getDelta();//获取刷新时间
+				//velocity每次的速度，为了保证有过渡
+				velocity.x -= velocity.x * 10.0 * delta;
+				velocity.z -= velocity.z * 10.0 * delta;
+				velocity.y -= 9.8 * 100.0 * delta; // 默认下降的速度
+
+				//获取当前按键的方向并获取朝哪个方向移动
+				direction.z = Number( moveForward ) - Number( moveBackward );
+				direction.x = Number( moveLeft ) - Number( moveRight );
+
+				//将法向量的值归一化
+				direction.normalize();
+				
+				//判断鼠标按下的方向
+				var m = new THREE.Matrix4();
+				if(direction.z > 0){
+					if(direction.x > 0){
+						m.makeRotationY(Math.PI/4);
+					}else if(direction.x < 0){
+						m.makeRotationY(-Math.PI/4);
+					}else{
+						m.makeRotationY(0);
+					}
+				}else if(direction.z < 0){
+					if(direction.x > 0){
+						m.makeRotationY(Math.PI/4*3);
+					}else if(direction.x < 0){
+						m.makeRotationY(-Math.PI/4*3);
+					}else{
+						m.makeRotationY(Math.PI);
+					}
+				}else{
+					if(direction.x > 0){
+						m.makeRotationY(Math.PI/2);
+					}else if(direction.x < 0){
+						m.makeRotationY(-Math.PI/2);
+					}
+				}
+   //         rotation.applyMatrix4(m);
+            if ( moveForward || moveBackward ) velocity.z -= direction.z * speed * delta;
+            if ( moveLeft || moveRight ) velocity.x -= direction.x * speed * delta;
+
+            //根据速度值移动控制器
+            control.translateX( velocity.x * delta );
+            control.translateY( velocity.y * delta );
+            control.translateZ( velocity.z * delta );
+
+            //保证控制器的y轴在10以上
+            if ( control.position.y <= 0 ) {
+                velocity.y = 0;
+                control.position.y = 0;
+            }
+        }
+		//第一人称视角更新
+		
+			renderer.render(scene, camera);
+		}
+		
+		//调用渲染函数
+        render();
+
+		
+		
+	//=====================================第一人称控制=================================================================
+	var instructions = document.getElementById( 'canvas-dom' );
+
+    //移动相关的变量
+	var clock = new THREE.Clock();
+    var controlsEnabled = false;
+    var moveForward = false;
+    var moveBackward = false;
+    var moveLeft = false;
+    var moveRight = false;
+
+    //声明射线
+    var upRaycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3( 0, 1, 0), 0, 10);
+    var horizontalRaycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(), 0, 10);
+    var downRaycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3( 0, -1, 0), 0, 10);
+
+    var velocity = new THREE.Vector3(); //移动速度变量
+    var direction = new THREE.Vector3(); //移动的方向变量
+    var rotation = new THREE.Vector3(); //当前的相机朝向
+    var speed = 50; //控制器移动速度
+	
+	
+	var cameraFPS;
+		
+		
+	function initControls() {
+		cameraFPS = new THREE.PerspectiveCamera(75, mainCanvas.offsetWidth/mainCanvas.offsetHeight, 0.1, 100);
+		camera = cameraFPS;
+        controls = new THREE.PointerLockControls( camera );
+        controls.getObject().position.x = 0;
+		controls.getObject().position.y = 0.5;
+		controls.getObject().position.z = 10;
+        scene.add( controls.getObject() );
+        var onKeyDown = function ( event ) {
+
+            switch ( event.keyCode ) {
+                case 38: // up
+                case 87: // w
+                    moveForward = true;
+                    break;
+
+                case 37: // left
+                case 65: // a
+                    moveLeft = true; break;
+                case 40: // down
+                case 83: // s
+                    moveBackward = true;
+                    break;
+
+                case 39: // right
+                case 68: // d
+                    moveRight = true;
+                    break;
+            }
+        };
+
+        var onKeyUp = function ( event ) {
+            switch( event.keyCode ) {
+                case 38: // up
+                case 87: // w
+                    moveForward = false;
+                    break;
+                case 37: // left
+                case 65: // a
+                    moveLeft = false;
+                    break;
+                case 40: // down
+                case 83: // s
+                    moveBackward = false;
+                    break;
+                case 39: // right
+                case 68: // d
+                    moveRight = false;
+                    break;
+            }
+        };
+        document.addEventListener( 'keydown', onKeyDown, false );
+        document.addEventListener( 'keyup', onKeyUp, false );
+    }
+
+ 
+
+    function initPointerLock() {
+        //实现鼠标锁定
+        var havePointerLock = 'pointerLockElement' in document || 'mozPointerLockElement' in document || 'webkitPointerLockElement' in document;
+        if ( havePointerLock ) {
+            var element = document.body;
+            var pointerlockchange = function ( event ) {
+                if ( document.pointerLockElement === element || document.mozPointerLockElement === element || document.webkitPointerLockElement === element ) {
+                    controlsEnabled = true;
+                    controls.enabled = true;
+                } else {
+                    controls.enabled = false;
+                }
+            };
+            var pointerlockerror = function ( event ) {
+					console.log("pointlocker error");
+            };
+            // 监听变动事件
+            document.addEventListener( 'pointerlockchange', pointerlockchange, false );
+            document.addEventListener( 'mozpointerlockchange', pointerlockchange, false );
+            document.addEventListener( 'webkitpointerlockchange', pointerlockchange, false );
+            document.addEventListener( 'pointerlockerror', pointerlockerror, false );
+            document.addEventListener( 'mozpointerlockerror', pointerlockerror, false );
+            document.addEventListener( 'webkitpointerlockerror', pointerlockerror, false );
+            instructions.addEventListener( 'click', RequestPointLockerControl, false );
+			
+		}else {
+        }
+    }
+	
+	function RequestPointLockerControl( event ) {
+				var element = document.body;
+                // 锁定鼠标光标
+                element.requestPointerLock = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock;
+                element.requestPointerLock();
+    }
+			Mode2D();
+    </script>
+	
+</body>
+</html>

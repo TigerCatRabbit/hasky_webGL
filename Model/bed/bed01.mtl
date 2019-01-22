@@ -1,0 +1,26 @@
+# Exported from 3D Builder
+
+newmtl Material_51
+Kd 0.062700 0.039200 0.000000
+
+newmtl White
+Kd 1.000000 1.000000 1.000000
+map_Kd denim.jpg
+
+newmtl Material_52
+Kd 0.498000 0.498000 0.498000
+
+newmtl Material_109
+Kd 0.498000 0.498000 0.498000
+
+newmtl Material_111
+Kd 0.498000 0.498000 0.498000
+
+newmtl Material_115
+Kd 0.588200 0.588200 0.588200
+
+newmtl Material_61
+Kd 0.498000 0.498000 0.498000
+
+newmtl Material_139
+Kd 0.498000 0.498000 0.498000
